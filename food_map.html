@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Global Street Food Adventure Map</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+    integrity="sha512-h7FcRodKs/nf0FmS8ZRqb7LN6qy+JByTTgk5iWXgE8GdZa1NoRMxjPUHxhXCpKMvpBbHnAbhQKQQFhJf/hwEYo7Q=="
+    crossorigin=""
+  ></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"
+    integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BO9aQ=="
+    crossorigin=""
+  />
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+l̥
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .filters {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .filter-btn {
+      background: linear-gradient(45deg, #ff6b6b, #ffb142);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+    }
+
+    /* Full width map */
+    .map-container {
+      margin: 2rem;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      height: 70vh;
+      position: relative;
+    }
+
+    .map {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Famous street foods panel below map */
+    .global-street-foods {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      margin: 0 2rem 2rem 2rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .food-card-global {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .food-card-global:hover {
+      transform: scale(1.05);
+    }
+
+    .food-image-global {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+
+    .food-card-content {
+      padding: 1rem;
+    }
+
+    .food-title-global {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+
+    .food-description-global {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .india-section {
+      background: linear-gradient(135deg, #ffa07a 0%, #ff69b4 100%);
+      padding: 2rem;
+      margin: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .india-map-placeholder {
+      background: linear-gradient(135deg, #ff4500 0%, #ffff00 100%);
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .indian-states-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .state-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .state-image {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .state-title {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .state-food {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      .hero-section {
+        padding: 3rem 1rem;
+      }
+      .filters {
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+      .map-container {
+        height: 50vh;
+        margin: 1rem;
+      }
+      .global-street-foods {
+        margin: 0 1rem 1rem 1rem;
+      }
+      .food-grid {
+        grid-template-columns: 1fr;
+      }
+      .indian-states-grid {
+        grid-template-columns: 1fr;
+      }
+      .india-section {
+        margin: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-section">
+    <h1 class="hero-title">Global Street Food Adventure Map</h1>
+    <p class="hero-subtitle">
+      Explore the flavors of the world on an interactive map. From savory
+      tacos in Mexico to spicy curries in Thailand, discover culinary
+      treasures that tell stories of culture and heritage.
+    </p>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-region="all">All Regions</button>
+    <button class="filter-btn" data-region="asia">Asia</button>
+    <button class="filter-btn" data-region="europe">Europe</button>
+    <button class="filter-btn" data-region="americas">Americas</button>
+    <button class="filter-btn" data-region="africa">Africa</button>
+    <button class="filter-btn" data-region="oceania">Oceania</button>
+  </div>
+
+  <!-- Full width map -->
+  <div class="map-container">
+    <div id="map" class="map"></div>
+  </div>
+
+  <!-- Famous street foods panel below map -->
+  <div class="global-street-foods">
+    <h2 class="section-title">Famous Street Foods Around the World</h2>
+    <div class="food-grid">
+      <div class="food-card-global">
+        <img
+          src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/78f80d38-4f4e-442b-bb42-a28ccae0fa2f.png"
+          alt="Colorful and savory Italian pizza with melted cheese, fresh basil, and tomato sauce served on a rustic wooden tray in a bustling Italian piazza"
+          class="food-image-global"
+        />
+        <div class="food-card-content">
+          <h3 class="food-title-global">Italy - Pizza Margherita</h3>
+          <p class="food-description-global">
+            A cornerstone of Italian street culture, featuring fresh tomatoes,
+            mozzarella, and basil.
+          </p>
+        </div>
+      </div>
+      <div class="food-card-global">
+        <img
+          src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7157bba3-ca9a-46ae-9657-0d97b12426c7.png"
+          alt="Juicy Mexican tacos with seasoned beef, fresh salsa, lime wedges, and cilantro packed in soft corn tortillas on a vibrant street cart"
+          class="food-image-global"
+        />
+        <div class="food-card-content">
+          <h3 class="food-title-global">Mexico - Tacos</h3>
+          <p class="food-description-global">
+            Authentic street tacos with a variety of fillings that burst with
+            bold flavors.
+          </p>
+        </div>
+      </div>
+      <div class="food-card-global">
+        <img
+          src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3eb25b67-8cba-482c-91a1-01ba8e166a84.png"
+          alt="Steaming Vietnamese pho with rice noodles, tender beef slices, fragrant herbs, and star anise in a clear broth served on a plastic stool"
+          class="food-image-global"
+        />
+        <div class="food-card-content">
+          <h3 class="food-title-global">Vietnam - Pho</h3>
+          <p class="food-description-global">
+            Comforting noodle soup that nourishes both body and soul.
+          </p>
+        </div>
+      </div>
+      <div class="food-card-global">
+        <img
+          src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/0c88fecd-c3af-4729-8b3c-a6d2d86c93b8.png"
+          alt="Tender Lebanese kebabs with marinated lamb, grilled vegetables, and tahini sauce on flatbread from a traditional Middle Eastern marketplace"
+          class="food-image-global"
+        />
+        <div class="food-card-content">
+          <h3 class="food-title-global">Lebanon - Shawarma</h3>
+          <p class="food-description-global">
+            Savor the rotisserie-cooked meats seasoned with Middle Eastern
+            spices.
+          </p>
+        </div>
+      </div>
+      <div class="food-card-global">
+        <img
+          src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/4a7d1660-2f11-42bf-887f-656e7624a512.png"
+          alt="Flaky Egyptian koshary with rice, lentils, pasta, and spicy tomato sauce topped with caramelized onions on a colorful plate"
+          class="food-image-global"
+        />
+        <div class="food-card-content">
+          <h3 class="food-title-global">Egypt - Koshary</h3>
+          <p class="food-description-global">
+            Egypt's national dish, a hearty mix of grains and spiced tomato
+            sauce.
+          </p>
+        </div>
+      </div>
+      <div class="food-card-global">
+        <img
+          src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/03c9e2ff-61ce-47ab-bdcb-cced675f2db3.png"
+          alt="Crisp Australian meat pie with golden pastry, minced beef, and rich gravy wrapped in paper on a sunny outdoor table"
+          class="food-image-global"
+        />
+        <div class="food-card-content">
+          <h3 class="food-title-global">Australia - Meat Pie</h3>
+          <p class="food-description-global">
+            The ultimate comfort food with flaky pastry and savory filling.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="india-section">
+    <h2 class="section-title">Indian Street Foods by State</h2>
+    <div class="india-map-placeholder">
+      Interactive India Map (Placeholder for Real Map)
+    </div>
+    <div class="indian-states-grid">
+      <div class="state-card">
+        <img
+          src="https://tripstheworld.com/wp-content/uploads/2025/01/What-are-the-Famous-Street-Food-of-Punjab.jpg"
+          alt="Golden Punjab samosas filled with spicy potatoes, peas, and green chilies"
+          class="state-image"
+        />
+        <h3 class="state-title">Punjab</h3>
+        <p class="state-food">"Golden, flaky Amritsari Kulcha – a taste of pure Punjabi delight!"</p>
+      </div>
+      <div class="state-card">
+        <img
+          src="https://thvnext.bing.com/th/id/OIP.tuve2MphYWZ_0rl0-H--2AHaJ4?w=144&h=192&c=7&r=0&o=7&cb=ucfimg2&dpr=2&pid=1.7&rm=3&ucfimg=1"
+          alt="Piping hot Kerala appam with coconut chutney and vegetable stew"
+          class="state-image"
+        />
+        <h3 class="state-title">Kerala</h3>
+        <p class="state-food">Appam - Fermented rice pancakes with coconut curry.</p>
+      </div>
+      <div class="state-card">
+        <img
+          src="https://tse4.mm.bing.net/th/id/OIP.LUQasAjdc8lRqqr6fSOBrgHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+          alt="Fiery Odisha pakoda with crisp vegetables and chutney"
+          class="state-image"
+        />
+        <h3 class="state-title">Odisha</h3>
+        <p class="state-food">Pakoda - Deep-fried fritters with spices.</p>
+      </div>
+      <div class="state-card">
+        <img
+          src="https://tse3.mm.bing.net/th/id/OIP.50f6tdbTulDgB6siPL5mEgHaE7?r=0&cb=ucfimg2ucfimg=1&w=500&h=333&rs=1&pid=ImgDetMain&o=7&rm=3"
+          alt="Hearty Bengal shorshe ilish with mustard marinated hilsa fish"
+          class="state-image"
+        />
+        <h3 class="state-title">West Bengal</h3>
+        <p class="state-food">Shorshe Ilish - Mustard-marinated hilsa fish.</p>
+      </div>
+      <div class="state-card">
+        <img
+          src="https://tse2.mm.bing.net/th/id/OIP.PScAg-hN5O3urpn5phubhQHaEq?r=0&cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"
+          alt="Sweet and syrupy Gujarati dhokla steamed dumplings"
+          class="state-image"
+        />
+        <h3 class="state-title">Gujarat</h3>
+        <p class="state-food">Dhokla - Light steamed cakes with fermented rice and lentils.</p>
+      </div>
+      <div class="state-card">
+        <img
+          src="https://purendesi.in/wp-content/uploads/2023/03/Vada-Pav.jpg"
+          alt="Tangy Mumbai vada pav with spiced potatoes in toasted bread"
+          class="state-image"
+        />
+        <h3 class="state-title">Maharashtra</h3>
+        <p class="state-food">Vada Pav - Potato patty in soft bread.</p>
+      </div>
+      <div class="state-card">
+        <img
+          src="https://i0.wp.com/buddymantra.com/wp-content/uploads/2022/03/paper-masala-dosa.jpg?resize=1068%2C713&ssl=1"
+          alt="Rich Tamil Nadu dosa with coconut chutney and sambar"
+          class="state-image"
+        />
+        <h3 class="state-title">Tamil Nadu</h3>
+        <p class="state-food">Dosa - Crispy crepe made from rice batter.</p>
+      </div>
+      <div class="state-card">
+        <img
+          src="https://tse3.mm.bing.net/th/id/OIP.UOwHoYE0a0_flQldS6ckcQHaGX?r=0&cb=ucfimg2ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"
+          alt="Smoky Rajasthan dal baati with ghee and churma dessert"
+          class="state-image"
+        />
+        <h3 class="state-title">Rajasthan</h3>
+        <p class="state-food">Dal Bhatti - Hearty Rajasthani dish with lentils, bread, sweetness.</p>
+    </div>
